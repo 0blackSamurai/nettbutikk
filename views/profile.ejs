@@ -1,0 +1,24 @@
+<!-- views/dashboard.ejs (oppdatert) -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <h1>Dashboard</h1>
+    
+    <div class="dashboard-menu">
+        <a href="/createReindyr">Legg reindyr i database</a>
+        <a href="/createflokk">Lag flokk</a>
+        <a href="/mineFlokker">Mine flokker</a>
+        <a href="/mineTransaksjoner">Mine transaksjoner</a>
+        <a href="/faq">spørsmål folk spør</a>
+        
+        <form action="/logout" class="loggbox" method="get">
+            <button type="submit" class="loggout">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

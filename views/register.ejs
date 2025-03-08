@@ -26,12 +26,6 @@
         <h3>Telefon</h3>
         <input type="number" placeholder="telefon" name="telefon" required>
     </div>
-        <label for="sprak">Språkgruppe:</label>
-    <select name="sprak" id="sprak" required>
-      <% samiskeSprak.forEach(sprak => { %>
-        <option value="<%= sprak %>"><%= sprak %></option>
-      <% }) %>
-    </select>
     <button type="submit">register</button>
 </form>
     

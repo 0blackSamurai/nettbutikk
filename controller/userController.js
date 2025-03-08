@@ -1,5 +1,5 @@
-const Dyr = require('../models/dyrModel');
-const Flokk = require('../models/flokkModel');
+// const Dyr = require('../models/dyrModel');
+// const Flokk = require('../models/flokkModel');
 const jwt = require('jsonwebtoken');
 
 const samiskeSprak = ['SØR', 'UME', 'PITE', 'LULE', 'NORD', 'ENARE', 'SKOLT', 'AKKALA', 'KILDIN', 'TER'];
@@ -72,7 +72,7 @@ exports.internOverforing = async (req, res) => {
     await dyr.save();
     
     // Finn eierinformasjon
-    const Eier = require('../models/eierModel');
+    const Eier = require('../models/userModel');
     const eierInfo = await Eier.findById(eierId);
     
     // Legg til dyret i ny flokk

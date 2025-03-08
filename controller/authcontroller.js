@@ -1,4 +1,4 @@
-const Eier = require('../models/eierModel');
+const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { isAuthenticated } = require('../middleware/authMiddleware');
@@ -6,7 +6,7 @@ const { isAuthenticated } = require('../middleware/authMiddleware');
 const samiskeSprak = ['SØR', 'UME', 'PITE', 'LULE', 'NORD', 'ENARE', 'SKOLT', 'AKKALA', 'KILDIN', 'TER'];
 
 exports.register = async (req, res) => {
-    const { navn, epost, passord, confirmpassord, telefon, sprak } = req.body;
+    const { navn, epost, passord, confirmpassord, telefon } = req.body;
 
     if (passord !== confirmpassord) {
         return res.send('Passwords do not match');
@@ -15,46 +15,45 @@ exports.register = async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(passord, parseInt(process.env.SALTROUNDS));
 
-        const newEier = new Eier({
+        const newUser = new User({
             navn,
             epost,
             passord: hashedPassword,
-            telefon,
-            sprak
+            telefon
         });
 
-        await newEier.save();
+        await newUser.save();
         res.redirect("/login");
     } catch (error) {
         console.error('Error registering user:', error);
-        res.status(500).send('Error registering eier');
+        res.status(500).send('Error registering User');
     }
 };
 
 exports.login = async (req, res) => {
     const { epost, passord } = req.body;
     
-    const eier = await Eier.findOne({ epost });
+    const User = await User.findOne({ epost });
 
 
-    if (!eier) {
+    if (!User) {
         return res.status(400).send('Bruker ikke funnet');
     }
 
-    const isMatch = await bcrypt.compare(passord, eier.passord);
+    const isMatch = await bcrypt.compare(passord, User.passord);
 
     if (!isMatch) {
         return res.status(400).send('Feil passord');
     }
 
-    const token = jwt.sign({ eierId: eier._id }, process.env.JWT_SECRET, { expiresIn: '48h' });
-    res.cookie('eier', token, { httpOnly: true });
+    const token = jwt.sign({ Userid: User._id }, process.env.JWT_SECRET, { expiresIn: '48h' });
+    res.cookie('User', token, { httpOnly: true });
     
     return res.status(200).redirect("/dashboard");
 };
 
 exports.logout = (req, res) => {
-    res.clearCookie('eier');
+    res.clearCookie('User');
     res.redirect("/login");
 };
 
