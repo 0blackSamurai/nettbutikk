@@ -33,27 +33,39 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const { epost, passord } = req.body;
     
-    const User = await User.findOne({ epost });
+    try {
+        const user = await User.findOne({ epost });
 
+        if (!user) {
+            return res.status(400).send('Bruker ikke funnet');
+        }
 
-    if (!User) {
-        return res.status(400).send('Bruker ikke funnet');
+        // Check if passord or user.passord is undefined or null
+        if (!passord || !user.passord) {
+            console.error('Password data missing:', { 
+                requestHasPassword: !!passord,
+                userHasPassword: !!user.passord
+            });
+            return res.status(400).send('Login error: Missing password data');
+        }
+
+        const isMatch = await bcrypt.compare(passord, user.passord);
+
+        if (!isMatch) {
+            return res.status(400).send('Feil passord');
+        }
+
+        const token = jwt.sign({ Userid: user._id }, process.env.JWT_SECRET, { expiresIn: '48h' });
+        res.cookie('User', token, { httpOnly: true });
+        
+        return res.status(200).redirect("/dashboard");
+    } catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).send('An error occurred during login');
     }
-
-    const isMatch = await bcrypt.compare(passord, User.passord);
-
-    if (!isMatch) {
-        return res.status(400).send('Feil passord');
-    }
-
-    const token = jwt.sign({ Userid: User._id }, process.env.JWT_SECRET, { expiresIn: '48h' });
-    res.cookie('User', token, { httpOnly: true });
-    
-    return res.status(200).redirect("/dashboard");
 };
-
 exports.logout = (req, res) => {
-    res.clearCookie('User');
+    res.clearCookie('user');
     res.redirect("/login");
 };
 
@@ -66,7 +78,7 @@ exports.renderLoginPage = (req, res) => {
 };
 
 exports.renderDashboardPage = (req, res) => {
-    res.render("dashboard", { title: "profile", samiskeSprak });
+    res.render("dashboard", { title: "Dashboard", samiskeSprak });
 };
 exports.renderFaqPage = (req, res) => {
     res.render("Faq", { title: "Frequently Asked Questions", samiskeSprak });
