@@ -65,9 +65,9 @@ exports.login = async (req, res) => {
     }
 };
 exports.logout = (req, res) => {
-    res.clearCookie('user');
+    res.clearCookie('User'); // Changed from user to User
     res.redirect("/login");
-};
+};  
 
 exports.renderRegisterPage = (req, res) => {
     res.render("register", { title: "register", samiskeSprak });

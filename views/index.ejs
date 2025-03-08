@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,9 +6,41 @@
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <h1>hei</h1>
-    <a href="./login">login</a>
-    <a href="./register">register</a>
-       
+    <header>
+        <h1>T-skjorter og gensere for rockeband</h1>
+        <nav>
+            <a href="/">Hjem</a>
+            <% if (isAdmin) { %>
+                <a href="/admin/dashboard">Admin Dashboard</a>
+            <% } else { %>
+                <a href="/login">Logg inn</a>
+            <% } %>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="categories">
+            <h2>Kategorier</h2>
+            <div class="category-grid">
+                <% categories.forEach(category => { %>
+                    <div class="category-card">
+                        <a href="/category/<%= category._id %>">
+                            <% if (category.image) { %>
+                                <img src="<%= category.image %>" alt="<%= category.name %>">
+                            <% } else { %>
+                                <div class="placeholder-image"></div>
+                            <% } %>
+                            <h3><%= category.name %></h3>
+                            <p><%= category.type %></p>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 T-skjorter og gensere for rockeband</p>
+    </footer>
 </body>
-</html> 
+</html>

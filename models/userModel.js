@@ -6,6 +6,7 @@ const userSchema = new Schema({
   epost: { type: String, required: true, unique: true },
   passord: { type: String, required: true },
   telefon: { type: String, required: true },
+  isAdmin: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('user', userSchema);
