@@ -11,9 +11,12 @@
         <nav>
             <a href="/">Hjem</a>
             <% if (isAdmin) { %>
-                <a href="/admin/dashboard">Admin Dashboard</a>
+                <a href="/dashboard">Admin Dashboard</a>
+                <%} if (isAuthenticated) { %>
+                    <a href="/profile">profile</a>
             <% } else { %>
                 <a href="/login">Logg inn</a>
+                <a href="/register">register</a>
             <% } %>
         </nav>
     </header>

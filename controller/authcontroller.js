@@ -40,7 +40,6 @@ exports.login = async (req, res) => {
             return res.status(400).send('Bruker ikke funnet');
         }
 
-        // Check if passord or user.passord is undefined or null
         if (!passord || !user.passord) {
             console.error('Password data missing:', { 
                 requestHasPassword: !!passord,
@@ -65,24 +64,18 @@ exports.login = async (req, res) => {
     }
 };
 exports.logout = (req, res) => {
-    res.clearCookie('User'); // Changed from user to User
+    res.clearCookie('User'); 
     res.redirect("/login");
 };  
 
 exports.renderRegisterPage = (req, res) => {
-    res.render("register", { title: "register", samiskeSprak });
+    res.render("register", { title: "register" });
 };
 
 exports.renderLoginPage = (req, res) => {
-    res.render("login", { title: "login", samiskeSprak });
+    res.render("login", { title: "login" });
 };
 
 exports.renderDashboardPage = (req, res) => {
-    res.render("dashboard", { title: "Dashboard", samiskeSprak });
-};
-exports.renderFaqPage = (req, res) => {
-    res.render("Faq", { title: "Frequently Asked Questions", samiskeSprak });
-};
-exports.renderDiagramPage = (req, res) => {
-    res.render("Diagram", { title: "ER-diagram" });
+    res.render("dashboard", { title: "Dashboard" });
 };
