@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <h1>Profile</h1>
     
     
     <header class="header">
@@ -22,6 +21,7 @@
                 <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
             </div>
         </header>
+        <h1>Profile</h1>
         <form action="/logout" class="loggbox" method="get">
             <button type="submit" class="loggout">Logout</button>
         </form>
