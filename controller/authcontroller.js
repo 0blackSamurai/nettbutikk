@@ -57,7 +57,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ Userid: user._id }, process.env.JWT_SECRET, { expiresIn: '48h' });
         res.cookie('User', token, { httpOnly: true });
         
-        return res.status(200).redirect("/dashboard");
+        return res.status(200).redirect("/profile");
     } catch (error) {
         console.error('Login error:', error);
         return res.status(500).send('An error occurred during login');

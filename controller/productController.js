@@ -1,134 +1,95 @@
-
-const Product = require('../models/productModel');
-const Category = require('../models/categoryModel');
+const Product = require('../models/Product');
+const Genre = require('../models/Category'); // Using your existing model naming
 const fs = require('fs');
 const path = require('path');
-const { isAuthenticated } = require('../middleware/authMiddleware');
+const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
-exports.renderHome = async (req, res) => {
+// Render the page to create a new apparel
+exports.renderCreateApparel = async (req, res) => {
   try {
-    const categories = await Category.find();
-    res.render('home', { 
-      title: 'T-skjorter og gensere', 
-      categories,
-      isAdmin: req.user && req.user.isAdmin 
-    });
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).send('Server error');
-  }
-};
-
-exports.renderCategoryPage = async (req, res) => {
-  try {
-    const categoryId = req.params.categoryId;
-    const category = await Category.findById(categoryId);
-    const products = await Product.find({ category: categoryId });
+    // Fetch all genres/categories for the dropdown
+    const genres = await Genre.find();
     
-    res.render('category', { 
-      title: category.name, 
-      category, 
-      products,
-      isAdmin: req.user && req.user.isAdmin 
+    res.render('createApparel', { 
+      title: 'Create New Apparel',
+      genres,
+      isAdmin: true,
+      isAuthenticated: true
     });
   } catch (error) {
-    console.error('Error fetching category:', error);
+    console.error('Error fetching genres:', error);
     res.status(500).send('Server error');
   }
 };
 
-exports.renderProductPage = async (req, res) => {
+// Process the form submission and create a new product
+exports.createApparel = async (req, res) => {
   try {
-    const productId = req.params.productId;
-    const product = await Product.findById(productId).populate('category');
+    const { name, description, price, genre } = req.body;
     
-    res.render('product', { 
-      title: product.name, 
-      product,
-      isAdmin: req.user && req.user.isAdmin 
-    });
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    res.status(500).send('Server error');
-  }
-};
-
-// Admin functions
-exports.Profile = async (req, res) => {
-  try {
-    const products = await Product.find().populate('category');
-    const categories = await Category.find();
+    // Handle file uploads (you'll need multer middleware for this to work)
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach(file => {
+        images.push('/uploads/' + file.filename);
+      });
+    }
     
-    res.render('/profile', { 
-      title: 'Profile', 
-      products, 
-      categories,
-      isAuthenticated,
-    });
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).send('Server error');
-  }
-};
-
-exports.renderAddProduct = async (req, res) => {
-  try {
-    const categories = await Category.find();
-    res.render('admin/addProduct', { 
-      title: 'Add New Product', 
-      categories,
-      isAdmin: true
-    });
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).send('Server error');
-  }
-};
-
-exports.addProduct = async (req, res) => {
-  try {
-    const { name, description, price, category } = req.body;
-    const images = req.files ? req.files.map(file => '/uploads/' + file.filename) : [];
-    
+    // Create a new product
     const newProduct = new Product({
       name,
       description,
-      price,
-      category,
-      images
+      price: parseFloat(price),
+      genre, // This is the ID of the genre/category
+      images,
+      createdAt: new Date()
     });
     
+    // Save the product to the database
     await newProduct.save();
-    res.redirect('/admin/dashboard');
+    
+    console.log('New product created:', newProduct);
+    
+    // Redirect to the admin dashboard or product listing
+    res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error adding product:', error);
+    console.error('Error creating product:', error);
+    res.status(500).send('Error creating product: ' + error.message);
+  }
+};
+
+// Display all products
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find().populate('genre');
+    res.render('products', { 
+      title: 'All Products',
+      products,
+      isAdmin: req.user && req.user.isAdmin,
+      isAuthenticated: !!req.user
+    });
+  } catch (error) {
+    console.error('Error fetching products:', error);
     res.status(500).send('Server error');
   }
 };
 
-exports.renderAddCategory = (req, res) => {
-  res.render('admin/addCategory', { 
-    title: 'Add New Category',
-    isAdmin: true
-  });
-};
-
-exports.addCategory = async (req, res) => {
+// Display a single product
+exports.getProductById = async (req, res) => {
   try {
-    const { name, type, description } = req.body;
-    const image = req.file ? '/uploads/' + req.file.filename : null;
+    const product = await Product.findById(req.params.id).populate('genre');
+    if (!product) {
+      return res.status(404).send('Product not found');
+    }
     
-    const newCategory = new Category({
-      name,
-      type,
-      description,
-      image
+    res.render('productDetail', { 
+      title: product.name,
+      product,
+      isAdmin: req.user && req.user.isAdmin,
+      isAuthenticated: !!req.user
     });
-    
-    await newCategory.save();
-    res.redirect('/admin/dashboard');
   } catch (error) {
-    console.error('Error adding category:', error);
+    console.error('Error fetching product:', error);
     res.status(500).send('Server error');
   }
 };

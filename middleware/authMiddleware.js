@@ -19,11 +19,29 @@ function isAuthenticated(req, res, next) {
 }
 
 async function isAdmin(req, res, next) {
+    // First make sure the user is authenticated
+    const token = req.cookies.User;
+
+    if (!token) {
+        return res.redirect("/login");
+    }
+    
     try {
-        const user = await User.findById(req.user.userId);
-        if (!user || !user.isAdmin) {
-            return res.status(403).send('Unauthorized: Admin access required');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.Userid);
+        
+        if (!user) {
+            return res.redirect("/login");
         }
+        
+        if (!user.isAdmin) {
+            return res.status(403).render('error', { 
+                message: 'Access denied. Admin privileges required.',
+                title: 'Access Denied'
+            });
+        }
+        
+        req.user = user; // Store the full user object
         next();
     } catch (error) {
         console.error('Error checking admin status:', error);
