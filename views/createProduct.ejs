@@ -17,16 +17,21 @@
     <main>
         <h1>Create New Product</h1>
         
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <%= error %>
+            </div>
+        <% } %>
         
         <form action="/product" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="name">Produkt Navn *</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" required value="<%= locals.formData ? formData.name : '' %>">
             </div>
             
             <div class="form-group">
                 <label for="price">Pris (NOK) *</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" required>
+                <input type="number" id="price" name="price" step="0.01" min="0" required value="<%= locals.formData ? formData.price : '' %>">
             </div>
             
             <div class="form-group">
@@ -34,14 +39,16 @@
                 <select id="genre" name="genre" required>
                     <option value="">Velg kategori</option>
                     <% genres.forEach(genre => { %>
-                        <option value="<%= genre._id %>"><%= genre.name %> (<%= genre.type %>)</option>
+                        <option value="<%= genre._id %>" <%= locals.formData && formData.genre === genre._id.toString() ? 'selected' : '' %>>
+                            <%= genre.name %> (<%= genre.type %>)
+                        </option>
                     <% }); %>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="description">Beskrivelse * (maks 100 tegn)</label>
-                <textarea id="description" name="description" maxlength="100" required></textarea>
+                <textarea id="description" name="description" maxlength="100" required><%= locals.formData ? formData.description : '' %></textarea>
                 <div class="char-counter"><span id="char-count">0</span>/100</div>
             </div>
             
@@ -55,11 +62,17 @@
         </form>
     </main>
     
+    <footer>
+        <p>&copy; 2025 T-skjorter og gensere for rockeband</p>
+    </footer>
 
     <script>
         // Character counter for description
         const descriptionField = document.getElementById('description');
         const charCount = document.getElementById('char-count');
+        
+        // Set initial count
+        charCount.textContent = descriptionField.value.length;
         
         descriptionField.addEventListener('input', function() {
             const currentLength = this.value.length;

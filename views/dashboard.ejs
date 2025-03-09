@@ -1,22 +1,44 @@
-<!-- views/dashboard.ejs (oppdatert) -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <h1>Dashboard</h1>
-    
-    <div class="dashboard-menu">
-       <a href="/">hjem</a>
-        <a href="/createApparel">create apparel</a>
-        <a href="/createprodukt">create produkt</a>
+    <header>
+        <nav>
+            <a href="/">Hjem</a>
+            <a href="/logout">Logg ut</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Admin Dashboard</h1>
         
-        <form action="/logout" class="loggbox" method="get">
-            <button type="submit" class="loggout">Logout</button>
-        </form>
-    </div>
+        <% if (locals.success) { %>
+            <div class="success-message">
+                <%= success %>
+            </div>
+        <% } %>
+        
+        <div class="dashboard-menu">
+            <h2>Kategorier</h2>
+            <div class="admin-actions">
+                <a href="/createApparel" class="admin-button">Opprett Ny Kategori</a>
+                <a href="/categories" class="admin-button">Se Alle Kategorier</a>
+            </div>
+            
+            <h2>Produkter</h2>
+            <div class="admin-actions">
+                <a href="/create-product" class="admin-button">Opprett Nytt Produkt</a>
+                <a href="/products" class="admin-button">Se Alle Produkter</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 T-skjorter og gensere for rockeband</p>
+    </footer>
 </body>
 </html>
