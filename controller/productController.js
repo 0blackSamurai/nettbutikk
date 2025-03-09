@@ -1,17 +1,17 @@
 const Product = require('../models/Product');
-const Genre = require('../models/Category'); // Using your existing model naming
+const Genre = require('../models/Category'); // Note: You're using Genre model for categories
 const fs = require('fs');
 const path = require('path');
 const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
-// Render the page to create a new apparel
-exports.renderCreateApparel = async (req, res) => {
+// Render the page to create a new product
+exports.renderCreateProduct = async (req, res) => {
   try {
     // Fetch all genres/categories for the dropdown
     const genres = await Genre.find();
     
-    res.render('createApparel', { 
-      title: 'Create New Apparel',
+    res.render('createProduct', { 
+      title: 'Create New Product',
       genres,
       isAdmin: true,
       isAuthenticated: true
@@ -23,15 +23,65 @@ exports.renderCreateApparel = async (req, res) => {
 };
 
 // Process the form submission and create a new product
-exports.createApparel = async (req, res) => {
+exports.createProduct = async (req, res) => {
   try {
     const { name, description, price, genre } = req.body;
     
-    // Handle file uploads (you'll need multer middleware for this to work)
+    // Validate all required fields
+    if (!name || !description || !price || !genre) {
+      const genres = await Genre.find();
+      return res.render('createProduct', {
+        title: 'Create New Product',
+        genres,
+        error: 'Alle feltene er obligatoriske',
+        formData: req.body,
+        isAdmin: true,
+        isAuthenticated: true
+      });
+    }
+    
+    // Validate description length
+    if (description.length > 100) {
+      const genres = await Genre.find();
+      return res.render('createProduct', {
+        title: 'Create New Product',
+        genres,
+        error: 'Beskrivelsen kan ikke være over 100 tegn',
+        formData: req.body,
+        isAdmin: true,
+        isAuthenticated: true
+      });
+    }
+    
+    // Check if the genre exists
+    const genreExists = await Genre.findById(genre);
+    if (!genreExists) {
+      const genres = await Genre.find();
+      return res.render('createProduct', {
+        title: 'Create New Product',
+        genres,
+        error: 'Ugyldig kategori valgt',
+        formData: req.body,
+        isAdmin: true,
+        isAuthenticated: true
+      });
+    }
+    
+    // Handle file uploads
     const images = [];
     if (req.files && req.files.length > 0) {
       req.files.forEach(file => {
         images.push('/uploads/' + file.filename);
+      });
+    } else {
+      const genres = await Genre.find();
+      return res.render('createProduct', {
+        title: 'Create New Product',
+        genres,
+        error: 'Du må laste opp minst ett bilde',
+        formData: req.body,
+        isAdmin: true,
+        isAuthenticated: true
       });
     }
     
@@ -50,18 +100,29 @@ exports.createApparel = async (req, res) => {
     
     console.log('New product created:', newProduct);
     
-    // Redirect to the admin dashboard or product listing
-    res.redirect('/dashboard');
+    // Redirect to the admin dashboard with success message
+    return res.redirect('/dashboard?success=Produkt ble lagt til');
   } catch (error) {
     console.error('Error creating product:', error);
-    res.status(500).send('Error creating product: ' + error.message);
+    
+    // Re-render the form with error message
+    const genres = await Genre.find();
+    
+    return res.render('createProduct', {
+      title: 'Create New Product',
+      genres,
+      error: 'Feil ved lagring av produkt: ' + error.message,
+      formData: req.body,
+      isAdmin: true,
+      isAuthenticated: true
+    });
   }
 };
 
-// Display all products
+// Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate('genre');
+    const products = await Product.find().populate('genre').sort({ createdAt: -1 });
     res.render('products', { 
       title: 'All Products',
       products,
@@ -74,10 +135,37 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// Display a single product
+// Get products by category
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const category = await Genre.findById(categoryId);
+    
+    if (!category) {
+      return res.status(404).send('Category not found');
+    }
+    
+    const products = await Product.find({ genre: categoryId }).populate('genre');
+    
+    res.render('category', { 
+      title: category.name,
+      category,
+      products,
+      isAdmin: req.user && req.user.isAdmin,
+      isAuthenticated: !!req.user
+    });
+  } catch (error) {
+    console.error('Error fetching products by category:', error);
+    res.status(500).send('Server error');
+  }
+};
+
+// Get a single product
 exports.getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate('genre');
+    const productId = req.params.id;
+    const product = await Product.findById(productId).populate('genre');
+    
     if (!product) {
       return res.status(404).send('Product not found');
     }

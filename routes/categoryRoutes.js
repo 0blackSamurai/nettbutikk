@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controller/productController');
+const categoryController = require('../controller/categoryController');
 const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
     cb(null, 'public/uploads/');
   },
   filename: function (req, file, cb) {
-    cb(null, 'product-' + Date.now() + path.extname(file.originalname));
+    cb(null, 'category-' + Date.now() + path.extname(file.originalname));
   }
 });
 
@@ -27,19 +27,16 @@ const upload = multer({
   }
 });
 
-// Create product form route (admin only)
-router.get('/create-product', isAdmin, productController.renderCreateProduct);
+// Create category form route (admin only)
+router.get('/createApparel', isAdmin, categoryController.renderCreateCategory);
 
-// Process product creation (admin only)
-router.post('/product', isAdmin, upload.array('images', 5), productController.createProduct);
+// Process category creation (admin only)
+router.post('/category', isAdmin, upload.single('image'), categoryController.createCategory);
 
-// Get all products
-router.get('/products', productController.getAllProducts);
+// Get all categories
+router.get('/categories', categoryController.getAllCategories);
 
-// Get products by category
-router.get('/category/:categoryId', productController.getProductsByCategory);
-
-// Get a specific product
-router.get('/product/:id', productController.getProductById);
+// Get a specific category
+router.get('/category/:id', categoryController.getCategoryById);
 
 module.exports = router;

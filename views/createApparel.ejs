@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create New Apparel</title>
+    <title>Create New Apparel Category</title>
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
@@ -14,13 +14,12 @@
     </header>
 
     <main>
-        <h1>Create New Apparel</h1>
+        <h1>Create New Apparel Category</h1>
         
-    
         
-        <form action="/apparel" method="POST" enctype="multipart/form-data">
+        <form action="/category" method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="name">Apparel Navn *</label>
+                <label for="name">Category Navn *</label>
                 <input type="text" id="name" name="name" required>
             </div>
             
@@ -30,27 +29,22 @@
                 <small class="char-count"><span id="char-count">0</span>/100</small>
             </div>
             
-            
             <div class="form-group">
-                <label for="subgenre">sub genre</label>
-                <input type="text" id="subgenre">
-                <!-- <select id="genre" name="genre" required>
-                    <option value="">Velg kategori</option>
-                    <% genres.forEach(genre => { %>
-                        <% if (genre.type === 'genser' || genre.type === 't-skjorte') { %>
-                            <option value="<%= genre._id %>"><%= genre.name %> (<%= genre.type %>)</option>
-                        <% } %>
-                    <% }); %>
-                </select> -->
+                <label for="type">Type plagg *</label>
+                <select id="type" name="type" required>
+                    <option value="">Velg type</option>
+                    <option value="genser">Genser</option>
+                    <option value="t-skjorte">T-skjorte</option>
+                </select>
             </div>
             
             <div class="form-group">
-                <label for="images">Bilder *</label>
-                <input type="file" id="images" name="images" class="fileInput" accept="image/png, image/jpeg, image/jpg" required>
-                <small>Minst ett bilde er påkrevd</small>
+                <label for="image">Bilde *</label>
+                <input type="file" id="image" name="image" class="fileInput" accept="image/png, image/jpeg, image/jpg" required>
+                <small>Ett bilde er påkrevd</small>
             </div>
             
-            <button type="submit" class="submit-btn">Lag genre</button>
+            <button type="submit" class="submit-btn">Lag kategori</button>
         </form>
     </main>
     
@@ -80,17 +74,17 @@
         // Form validation
         const form = document.querySelector('form');
         form.addEventListener('submit', function(event) {
-            const fileInput = document.getElementById('images');
-            const genreSelect = document.getElementById('genre');
+            const fileInput = document.getElementById('image');
+            const typeSelect = document.getElementById('type');
             
             if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Du må laste opp minst ett bilde.');
+                alert('Du må laste opp et bilde.');
                 event.preventDefault();
                 return false;
             }
             
-            if (!genreSelect.value) {
-                alert('Du må velge en kategori.');
+            if (!typeSelect.value) {
+                alert('Du må velge en type plagg.');
                 event.preventDefault();
                 return false;
             }

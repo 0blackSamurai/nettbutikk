@@ -1,0 +1,72 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Hjem</a>
+            <% if (isAdmin) { %>
+                <a href="/dashboard">Admin Dashboard</a>
+            <% } if (isAuthenticated) { %>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logg ut</a>
+            <% } else { %>
+                <a href="/login">Logg inn</a>
+                <a href="/register">Register</a>
+            <% } %>
+        </nav>
+    </header>
+
+    <main>
+        <div class="product-detail">
+            <div class="product-images">
+                <% if (product.images && product.images.length > 0) { %>
+                    <div class="main-image">
+                        <img src="<%= product.images[0] %>" alt="<%= product.name %>" id="main-product-image">
+                    </div>
+                    
+                    <% if (product.images.length > 1) { %>
+                        <div class="thumbnail-images">
+                            <% product.images.forEach((image, index) => { %>
+                                <img src="<%= image %>" alt="<%= product.name %> thumbnail" 
+                                     class="thumbnail" 
+                                     onclick="document.getElementById('main-product-image').src='<%= image %>'">
+                            <% }); %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="placeholder-image large"></div>
+                <% } %>
+            </div>
+            
+            <div class="product-info">
+                <h1><%= product.name %></h1>
+                <p class="category"><a href="/category/<%= product.genre._id %>"><%= product.genre.name %></a></p>
+                <p class="price"><%= product.price %> kr</p>
+                <p class="description"><%= product.description %></p>
+                
+                <div class="product-actions">
+                    <div class="quantity">
+                        <label for="quantity">Antall:</label>
+                        <select id="quantity" name="quantity">
+                            <% for(let i = 1; i <= 10; i++) { %>
+                                <option value="<%= i %>"><%= i %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+                    <button class="add-to-cart-large">Legg i handlevogn</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 T-skjorter og gensere for rockeband</p>
+    </footer>
+</body>
+</html>

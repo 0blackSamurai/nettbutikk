@@ -7,7 +7,8 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const homeRoutes = require('./routes/homeRoutes');
 const userRoutes = require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes'); // Add this line
+const productRoutes = require('./routes/productRoutes');
+const categoryRoutes = require('./routes/categoryRoutes'); // Add this line
 
 const app = express();
 
@@ -37,7 +38,8 @@ mongoose.connect(process.env.DB_URL)
 app.use('/', homeRoutes);
 app.use('/', authRoutes);
 app.use('/', userRoutes);
-app.use('/', productRoutes); // Add this line
+app.use('/', productRoutes);
+app.use('/', categoryRoutes); // Add this line
 
 // Error handler middleware
 app.use((err, req, res, next) => {

@@ -1,0 +1,79 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Product</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Hjem</a>
+            <a href="/dashboard">Admin Dashboard</a>
+            <a href="/logout">Logg ut</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Create New Product</h1>
+        
+        
+        <form action="/product" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Produkt Navn *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Pris (NOK) *</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="genre">Kategori *</label>
+                <select id="genre" name="genre" required>
+                    <option value="">Velg kategori</option>
+                    <% genres.forEach(genre => { %>
+                        <option value="<%= genre._id %>"><%= genre.name %> (<%= genre.type %>)</option>
+                    <% }); %>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Beskrivelse * (maks 100 tegn)</label>
+                <textarea id="description" name="description" maxlength="100" required></textarea>
+                <div class="char-counter"><span id="char-count">0</span>/100</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="images">Produktbilder *</label>
+                <input type="file" id="images" name="images" class="fileInput" accept="image/png, image/jpeg, image/jpg" multiple required>
+                <small>Minst ett bilde er påkrevd</small>
+            </div>
+            
+            <button type="submit" class="submit-btn">Lagre produkt</button>
+        </form>
+    </main>
+    
+
+    <script>
+        // Character counter for description
+        const descriptionField = document.getElementById('description');
+        const charCount = document.getElementById('char-count');
+        
+        descriptionField.addEventListener('input', function() {
+            const currentLength = this.value.length;
+            charCount.textContent = currentLength;
+            
+            // Visual feedback if approaching limit
+            if (currentLength > 80) {
+                charCount.style.color = 'orange';
+            } else if (currentLength > 90) {
+                charCount.style.color = 'red';
+            } else {
+                charCount.style.color = 'inherit';
+            }
+        });
+    </script>
+</body>
+</html>
