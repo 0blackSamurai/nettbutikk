@@ -1,45 +1,84 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <link rel="stylesheet" href="/main.css">
+        
 </head>
 <body>
-    <header>
-        <h1>T-skjorter og gensere for rockeband</h1>
-        <nav>
-            <a href="/">Hjem</a>
-            <% if (isAdmin) { %>
-                <a href="/dashboard">Admin Dashboard</a>
-                <%} if (isAuthenticated) { %>
-                    <a href="/profile">profile</a>
+    <header class="header">
+        <div class="logo">
+            <a href="/">
+                Logo
+            </a>
+        </div>
+        <div class="site-title">
+            [site title]
+        </div>
+        <div class="nav-right">
+            <% if (isAuthenticated) { %>
+                <% if (isAdmin) { %>
+                    <a href="/dashboard">Admin</a> |
+                <% } %>
+                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
+                <a href="/logout">log out</a>
             <% } else { %>
-                <a href="/login">Logg inn</a>
-                <a href="/register">register</a>
+                <a href="/login">log in</a>
             <% } %>
-        </nav>
+        </div>
     </header>
     
     <main>
-        <section class="categories">
-            <h2>Kategorier</h2>
-            <div class="category-grid">
-                <% categories.forEach(category => { %>
-                    <div class="category-card">
-                        <a href="/category/<%= category._id %>">
-                            <% if (category.image) { %>
-                                <img src="<%= category.image %>" alt="<%= category.name %>">
-                            <% } else { %>
-                                <div class="placeholder-image"></div>
-                            <% } %>
-                            <h3><%= category.name %></h3>
-                            <p><%= category.type %></p>
-                        </a>
+        <!-- Display products by genre/category -->
+        <% if (categories && categories.length > 0) { %>
+            <% const genres = ['genser', 't-skjorte']; %>
+            <% genres.forEach(genre => { %>
+                <section class="genre-section">
+                    <h2 class="genre-title"><%= genre === 'genser' ? 'Gensere' : 'T-skjorter' %></h2>
+                    <div class="product-grid">
+                        <% 
+                            const filteredCategories = categories.filter(category => category.type === genre);
+                            if (filteredCategories.length > 0) {
+                                // Display up to 3 categories for each genre
+                                const displayCategories = filteredCategories.slice(0, 3);
+                                displayCategories.forEach(category => { 
+                        %>
+                            <div class="product-card">
+                                <a href="/category/<%= category._id %>">
+                                    <div class="product-image">
+                                        <% if (category.image) { %>
+                                            <img src="<%= category.image %>" alt="<%= category.name %>">
+                                        <% } else { %>
+                                            Image
+                                        <% } %>
+                                    </div>
+                                    <div class="product-info">
+                                        <h3 class="product-name">Product Name</h3>
+                                        <p class="product-description">product description lorem ipsum hocus est pocus fill ocus lorem ipsum hocus est pocus fill ocus</p>
+                                    </div>
+                                </a>
+                                <div>genre <%= genre === 'genser' ? '1' : '2' %></div>
+                            </div>
+                        <% }); %>
+                        <% } else { %>
+                            <div class="message">
+                                No <%= genre === 'genser' ? 'sweaters' : 't-shirts' %> found.
+                            </div>
+                        <% } %>
                     </div>
-                <% }); %>
+                </section>
+            <% }); %>
+        <% } else { %>
+            <div class="message">
+                No categories found. Please add some products.
             </div>
-        </section>
+        <% } %>
+
+        <div class="message">
+            Go to your favorite rock genre to see apparel that suits how you rock!
+        </div>
     </main>
     
     <footer>
