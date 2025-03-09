@@ -6,11 +6,18 @@
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="/">Hjem</a>
-            <a href="/logout">Logg ut</a>
-        </nav>
+    <header class="header">
+        <div class="logo">
+            <a href="/">
+                Logo
+            </a>
+        </div>
+        <div class="site-title">
+            Kendrick klær
+        </div>
+        <div class="nav-right">
+                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
+        </div>
     </header>
 
     <main>

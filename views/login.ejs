@@ -5,6 +5,27 @@
     <title>Document</title>
 </head>
 <body>
+    <header class="header">
+        <div class="logo">
+            <a href="/">
+                Logo
+            </a>
+        </div>
+        <div class="site-title">
+            Kendrick klær
+        </div>
+        <div class="nav-right">
+            <% if (isAuthenticated) { %>
+                <% if (isAdmin) { %>
+                    <a href="/dashboard">Admin</a> |
+                <% } %>
+                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
+                <a href="/logout">log out</a>
+            <% } else { %>
+                <a href="/login">log in</a>
+            <% } %>
+        </div>
+    </header>
 
     <h2>Login</h2>
     <form action="/login" method="POST">

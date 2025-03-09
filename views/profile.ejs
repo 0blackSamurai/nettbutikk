@@ -9,13 +9,23 @@
     <h1>Profile</h1>
     
     
-    <div class="test">
-       <a href="/">hjem</a>
-        <a href="/faq">spørsmål folk spør</a>
-        
+    <header class="header">
+        <div class="logo">
+            <a href="/">
+                Logo
+            </a>
+        </div>
+        <div class="site-title">
+            Kendrick klær
+        </div>
+        <div class="nav-right">
+                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
+            </div>
+        </header>
         <form action="/logout" class="loggbox" method="get">
             <button type="submit" class="loggout">Logout</button>
         </form>
-    </div>
+        
+
 </body>
 </html>
