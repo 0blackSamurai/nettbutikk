@@ -13,8 +13,10 @@ router.get('/logout', authController.logout);
 
 router.get('/dashboard', isAuthenticated, authController.renderDashboardPage);
 
-router.get('/Faq', authController.renderFaqPage);
+router.get('/profile', isAuthenticated, authController.renderProfilePage);
 
-router.get('/diagram', authController.renderDiagramPage);
+// router.get('/Faq', authController.renderFaqPage);
+
+// router.get('/diagram', authController.renderDiagramPage);
 
 module.exports = router;

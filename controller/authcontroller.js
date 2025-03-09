@@ -79,3 +79,6 @@ exports.renderLoginPage = (req, res) => {
 exports.renderDashboardPage = (req, res) => {
     res.render("dashboard", { title: "Dashboard" });
 };
+exports.renderProfilePage = (req, res) => {
+    res.render("profile", { title: "Profile" });
+};
