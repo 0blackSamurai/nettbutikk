@@ -6,21 +6,28 @@
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="/">Hjem</a>
+    <header class="header">
+        <div class="logo">
+            <a href="/">
+                Logo
+            </a>
+        </div>
+        <div class="site-title">
+            Kendrick klær
+        </div>
+        <div class="nav-right">
             <% if (isAuthenticated) { %>
                 <% if (isAdmin) { %>
                     <a href="/dashboard">Admin</a> |
                 <% } %>
-                <a href="/profile">Profile</a>
-                <a href="/logout">Logg ut</a>
-                <% } else { %>
-                    <a href="/login">log in</a>
-                    <a href="/register">register</a>
-                <% } %> 
-        </nav>
+                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
+                <a href="/logout">log out</a>
+            <% } else { %>
+                <a href="/login">log in</a>
+            <% } %>
+        </div>
     </header>
+    
 
     <main>
         <div class="product-detail">
@@ -45,9 +52,6 @@
             </div>
             <div class="product-info">
                 <h1><%= product.name %></h1>
-                <% if (isAdmin) { %>
-                    <a href="/edit-product/<%= product._id %>" class="admin-edit-button">Rediger produkt</a>
-                <% } %>
                 <p class="category"><a href="/category/<%= product.genre._id %>"><%= product.genre.name %></a></p>
                 <p class="price"><%= product.price %> kr</p>
                 <p class="description"><%= product.description %></p>
@@ -58,11 +62,14 @@
                         <select id="quantity" name="quantity">
                             <% for(let i = 1; i <= 10; i++) { %>
                                 <option value="<%= i %>"><%= i %></option>
-                            <% } %>
-                        </select>
-                    </div>
-                    
-                    <button class="add-to-cart-large">Legg i handlevogn</button>
+                                <% } %>
+                            </select>
+                        </div>
+                        
+                        <button class="add-to-cart-large">Legg i handlevogn</button>
+                        <% if (isAdmin) { %>
+                            <a href="/edit-product/<%= product._id %>" class="admin-edit-button">Rediger produkt</a>
+                        <% } %>
                 </div>
             </div>
         </div>

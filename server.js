@@ -22,6 +22,7 @@ if (!fs.existsSync(uploadsDir)) {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Add this for JSON support
 app.use(cookieParser());
+app.use(require('./middleware/authMiddleware').checkAuth);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
@@ -39,7 +40,7 @@ app.use('/', homeRoutes);
 app.use('/', authRoutes);
 app.use('/', userRoutes);
 app.use('/', productRoutes);
-app.use('/', categoryRoutes); // Add this line
+app.use('/', categoryRoutes); 
 
 // Error handler middleware
 app.use((err, req, res, next) => {

@@ -48,5 +48,28 @@ async function isAdmin(req, res, next) {
         res.status(500).send('Server error');
     }
 }
+async function checkAuth(req, res, next) {
+    const token = req.cookies.User;
+    req.isAuthenticated = false;
+    req.isAdmin = false;
+    
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findById(decoded.Userid);
+            
+            if (user) {
+                req.isAuthenticated = true;
+                req.user = user;
+                req.isAdmin = user.isAdmin || false;
+            }
+        } catch (err) {
+            console.error("Token verification error:", err);
+        }
+    }
+    
+    // Always continue to the next middleware/route handler
+    next();
+}
 
-module.exports = { isAuthenticated, isAdmin };
+module.exports = { isAuthenticated, isAdmin, checkAuth  };
