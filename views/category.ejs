@@ -6,20 +6,28 @@
     <link rel="stylesheet" href="/main.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="/">Hjem</a>
-            <% if (isAdmin) { %>
-                <a href="/dashboard">Admin Dashboard</a>
-            <% } if (isAuthenticated) { %>
-                <a href="/profile">Profile</a>
-                <a href="/logout">Logg ut</a>
+    <header class="header">
+        <div class="logo">
+            <a href="/">
+                Logo
+            </a>
+        </div>
+        <div class="site-title">
+            Kendrick klær
+        </div>
+        <div class="nav-right">
+            <% if (isAuthenticated) { %>
+                <% if (isAdmin) { %>
+                    <a href="/dashboard">Admin</a> |
+                <% } %>
+                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
+                <a href="/logout">log out</a>
             <% } else { %>
-                <a href="/login">Logg inn</a>
-                <a href="/register">Register</a>
+                <a href="/login">log in</a>
             <% } %>
-        </nav>
+        </div>
     </header>
+    
 
     <main>
         <h1><%= category.name %> (<%= category.type %>)</h1>

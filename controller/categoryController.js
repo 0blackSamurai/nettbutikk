@@ -5,6 +5,26 @@ const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 
 // Render the page to create a new category
 exports.renderCreateCategory = async (req, res) => {
+   const token = req.cookies.User;
+      let isAuthenticated = false;
+      let isAdminUser = false;
+      
+      if (token) {
+          try {
+              
+              const decoded = jwt.verify(token, process.env.JWT_SECRET);
+              isAuthenticated = true;
+              
+              // Check if user is admin
+              const user = await User.findById(decoded.Userid);
+              if (user && user.isAdmin) {
+                  isAdminUser = true;
+              }
+          } catch (err) {
+              console.error("Token verification error:", err);
+              // Invalid token, user not authenticated
+          }
+      }
   try {
     res.render('createApparel', { 
       title: 'Create New Apparel Category',

@@ -1,0 +1,176 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="/main.css">
+    <style>
+        .current-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .image-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        .delete-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Hjem</a>
+            <a href="/dashboard">Admin Dashboard</a>
+            <a href="/logout">Logg ut</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Edit Product: <%= product.name %></h1>
+        
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <form action="/update-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Produkt Navn *</label>
+                <input type="text" id="name" name="name" required value="<%= product.name %>">
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Pris (NOK) *</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" required value="<%= product.price %>">
+            </div>
+            
+            <div class="form-group">
+                <label for="genre">Kategori *</label>
+                <select id="genre" name="genre" required>
+                    <option value="">Velg kategori</option>
+                    <% genres.forEach(genre => { %>
+                        <option value="<%= genre._id %>" <%= product.genre.toString() === genre._id.toString() ? 'selected' : '' %>>
+                            <%= genre.name %> (<%= genre.type %>)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Beskrivelse * (maks 100 tegn)</label>
+                <textarea id="description" name="description" maxlength="100" required><%= product.description %></textarea>
+                <div class="char-counter"><span id="char-count"><%= product.description.length %></span>/100</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Nåværende bilder</label>
+                <div class="current-images">
+                    <% if (product.images && product.images.length > 0) { %>
+                        <% product.images.forEach((image, index) => { %>
+                            <div class="image-container" data-index="<%= index %>">
+                                <img src="<%= image %>" alt="Product image">
+                                <button type="button" class="delete-image" data-index="<%= index %>">×</button>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p>Ingen bilder</p>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="images">Legg til flere bilder</label>
+                <input type="file" id="images" name="images" class="fileInput" accept="image/png, image/jpeg, image/jpg" multiple>
+                <small>Valgfritt. Du kan legge til flere bilder.</small>
+            </div>
+            
+            <button type="submit" class="submit-btn">Oppdater produkt</button>
+        </form>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 T-skjorter og gensere for rockeband</p>
+    </footer>
+
+    <script>
+        // Character counter for description
+        const descriptionField = document.getElementById('description');
+        const charCount = document.getElementById('char-count');
+        
+        descriptionField.addEventListener('input', function() {
+            const currentLength = this.value.length;
+            charCount.textContent = currentLength;
+            
+            // Visual feedback if approaching limit
+            if (currentLength > 80) {
+                charCount.style.color = 'orange';
+            } else if (currentLength > 90) {
+                charCount.style.color = 'red';
+            } else {
+                charCount.style.color = 'inherit';
+            }
+        });
+        
+        // Image deletion
+        const deleteButtons = document.querySelectorAll('.delete-image');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                if (!confirm('Er du sikker på at du vil slette dette bildet?')) {
+                    return;
+                }
+                
+                const index = this.getAttribute('data-index');
+                const productId = '<%= product._id %>';
+                
+                try {
+                    const response = await fetch(`/product/${productId}/image/${index}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Remove the image container from the DOM
+                        const container = document.querySelector(`.image-container[data-index="${index}"]`);
+                        if (container) {
+                            container.remove();
+                        }
+                    } else {
+                        alert('Det oppstod en feil ved sletting av bildet: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting image:', error);
+                    alert('Det oppstod en feil ved sletting av bildet');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

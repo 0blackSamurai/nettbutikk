@@ -6,17 +6,16 @@ const User = require('../models/userModel');
 const samiskeSprak = ['SØR', 'UME', 'PITE', 'LULE', 'NORD', 'ENARE', 'SKOLT', 'AKKALA', 'KILDIN', 'TER'];
 
 exports.getHomePage = async (req, res) => {
-    // Initialize empty array for categories
     let categories = [];
     
-    // Check if user is logged in by verifying the cookie token
+
     const token = req.cookies.User;
     let isAuthenticated = false;
     let isAdminUser = false;
     
     if (token) {
         try {
-            // Verify the token
+            
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             isAuthenticated = true;
             
@@ -31,7 +30,7 @@ exports.getHomePage = async (req, res) => {
         }
     }
     
-    // Try to fetch categories if needed
+   
     try {
         categories = await Category.find();
     } catch (error) {

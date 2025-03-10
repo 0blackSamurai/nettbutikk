@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/main.css">
 </head>
 <body>
     <header class="header">
@@ -15,15 +16,9 @@
             Kendrick klær
         </div>
         <div class="nav-right">
-            <% if (isAuthenticated) { %>
-                <% if (isAdmin) { %>
-                    <a href="/dashboard">Admin</a> |
-                <% } %>
-                <a href="/profile"><%= locals.user ? user.navn : '[innlogget brukernavn]' %></a> |
-                <a href="/logout">log out</a>
-            <% } else { %>
+           
+                <a href="/register">register</a>
                 <a href="/login">log in</a>
-            <% } %>
         </div>
     </header>
 
@@ -39,6 +34,10 @@
         </div>
         <button type="submit">Login</button>
     </form>
+    <h2>
+
+        <a href="register">vil du registere deg?</a>
+    </h2>
 
 </body>
 </html>

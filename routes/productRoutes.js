@@ -5,7 +5,6 @@ const { isAuthenticated, isAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
 
-// Setup multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/uploads/');
@@ -41,5 +40,12 @@ router.get('/category/:categoryId', productController.getProductsByCategory);
 
 // Get a specific product
 router.get('/product/:id', productController.getProductById);
+router.get('/edit-product/:id', isAdmin, productController.renderEditProduct);
+
+// Process product update (admin only)
+router.post('/update-product/:id', isAdmin, upload.array('images', 5), productController.updateProduct);
+
+// Delete product image (admin only, AJAX route)
+router.delete('/product/:productId/image/:imageIndex', isAdmin, productController.deleteProductImage);
 
 module.exports = router;
