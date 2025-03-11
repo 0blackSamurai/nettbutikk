@@ -330,3 +330,37 @@ exports.deleteProductImage = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+  // Delete entire product
+exports.deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    
+    // Delete all associated image files from filesystem
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(imagePath => {
+        try {
+          const fullPath = path.join(__dirname, '../public', imagePath);
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+          }
+        } catch (fsError) {
+          console.warn(`Could not delete image file: ${imagePath}`, fsError);
+          // Continue anyway, we'll delete the product from the database
+        }
+      });
+    }
+    
+    // Delete the product from the database
+    await Product.findByIdAndDelete(productId);
+    
+    return res.json({ success: true, redirectUrl: '/products' });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

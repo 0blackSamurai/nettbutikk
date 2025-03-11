@@ -41,6 +41,7 @@ router.get('/category/:categoryId', productController.getProductsByCategory);
 // Get a specific product
 router.get('/product/:id', productController.getProductById);
 router.get('/edit-product/:id', isAdmin, productController.renderEditProduct);
+router.delete('/product/:id', isAdmin, productController.deleteProduct);
 
 // Process product update (admin only)
 router.post('/update-product/:id', isAdmin, upload.array('images', 5), productController.updateProduct);

@@ -69,11 +69,42 @@
                         <button class="add-to-cart-large">Legg i handlevogn</button>
                         <% if (isAdmin) { %>
                             <a href="/edit-product/<%= product._id %>" class="admin-edit-button">Rediger produkt</a>
+                            <button id="delete-product-btn" class="admin-delete-button" data-id="<%= product._id %>">Slett produkt</button>
                         <% } %>
                 </div>
             </div>
         </div>
     </main>
+    <% if (isAdmin) { %>
+        <script>
+            document.getElementById('delete-product-btn').addEventListener('click', async function() {
+                if (confirm('Er du sikker på at du vil slette dette produktet? Dette kan ikke angres.')) {
+                    const productId = this.getAttribute('data-id');
+                    
+                    try {
+                        const response = await fetch(`/product/${productId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Redirect to the products page
+                            window.location.href = result.redirectUrl || '/products';
+                        } else {
+                            alert('Det oppstod en feil ved sletting av produktet: ' + result.message);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting product:', error);
+                        alert('Det oppstod en feil ved sletting av produktet');
+                    }
+                }
+            });
+        </script>
+        <% } %>
     
     <footer>
         <p>&copy; 2025 T-skjorter og gensere for rockeband</p>
